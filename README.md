@@ -1,35 +1,43 @@
+```shell
 composer require tymon/jwt-auth
+```
 
 Open config/app.php file and update the providers and aliases array.
 
+```php
 'providers' => [
-   ...
-'Tymon\JWTAuth\Providers\LaravelServiceProvider',
+	'Tymon\JWTAuth\Providers\LaravelServiceProvider',
 ],
 'aliases' => [
-    ...
     'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
      'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 ],
+```
 
 
-
-
+```shell
 php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+```
+
 Then you will see a new file in config/jwt.php
 In the next step, you need to run a php artisan jwt:secret from the console to generate a secret auth secret.
 
 
+```shell
 php artisan jwt:secret
+```
+
 Jwt key will be created in .env like this
 JWT_SECRET=OSPvaJsWFZ2lXHJl12Hvi6sVUuPo403wjoR6Soaay2OfVCHrscfPmj1Jz8PW87B0
 
 
 
-Command: php artisan make:middleware JwtMiddleware
-By running this command you will see a new file app\Http\Middleware\JwtMiddleware.php
-<?php
+```shell
+php artisan make:middleware JwtMiddleware
+```
 
+By running this command you will see a new file app\Http\Middleware\JwtMiddleware.php
+```php
 namespace App\Http\Middleware;
 
 use Closure;
@@ -63,32 +71,33 @@ class JwtMiddleware extends BaseMiddleware
         return $next($request);
     }
 }
-
+```
 
 
 To use this middleware register this into Kernel. Open app\Http\Kernel.php
-...
+```php
 protected $routeMiddleware = [
-...
         'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
         'jwt.auth' => 'Tymon\JWTAuth\Middleware\GetUserFromToken',
         'jwt.refresh' => 'Tymon\JWTAuth\Middleware\RefreshToken',
     ];
-...
+```
 
 
-
+```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=test_rest_api_db
 DB_USERNAME=root
 DB_PASSWORD=
+```
+
 
 
 To use this middleware register this into Kernel. Open Route
-<?php
 
+```php
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
@@ -106,7 +115,7 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::put('update/{product}',  [ProductController::class, 'update']);
     Route::delete('delete/{product}',  [ProductController::class, 'destroy']);
 });
-
+```
 
 
 
@@ -114,14 +123,14 @@ php artisan make:controller ApiController
 This command will create the fresh new controller here: app\Http\Controllers\ApiController.php
 
 
-
+```shell
 php artisan make:model Product -rcm
-
+```
 
 
 Next, we have to CREATE API controller action. For that, open file app\Http\Controllers\ApiController.php and paste the below code.
 
-<?php
+```php
 
 namespace App\Http\Controllers;
 
@@ -242,12 +251,12 @@ class ApiController extends Controller
         return response()->json(['user' => $user]);
     }
 }
-
+```
 
 
 Now, in this step, you will have to implement our authentication logic into our application. To create a product controller action, open file app\Http\Controllers\ProductController.php and paste below code:
 
-<?php
+```php
 namespace App\Http\Controllers;
 
 use App\Models\Product;
@@ -412,10 +421,10 @@ class ProductController extends Controller
         ], Response::HTTP_OK);
     }
 }
-
+```
 
 Open file app\Models\User.php and paste below code:
-<?php
+```php
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -468,10 +477,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Product::class);
     }
 }
-
+```
 Update Product.php model
 
-<?php
+```php
 
 namespace App\Models;
 
@@ -485,11 +494,11 @@ class Product extends Model
         'name', 'sku', 'price', 'quantity'
     ];
 }
-
+```
 
 Open file database\migrations\2020_09_17_112923_create_products_table.php and paste below code
 
-<?php
+```php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -530,8 +539,8 @@ class CreateProductsTable extends Migration
         Schema::dropIfExists('products');
     }
 }
+```
 
-
+```shell
 php artisan migrate
-
-php artisan migrate
+```
