@@ -1,3 +1,9 @@
+Auto
+```shell
+composer install
+```
+
+Manual
 ```shell
 composer require tymon/jwt-auth
 ```
